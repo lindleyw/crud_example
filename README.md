@@ -21,3 +21,8 @@ Before running the test script, use the command line:
 
     $ script/crud_example user create user pass123
 
+You can then run the test script as:
+
+    $ script/crud_example test -v
+
+The -v is for verbose and may be omitted.
