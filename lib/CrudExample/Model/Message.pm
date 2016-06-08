@@ -54,6 +54,9 @@ package CrudExample::Model::Message v0.0.1 {
             #                        -returning => 'id'
             #                       )
             #   )
+
+              # -where => {id => {'=', \['( SELECT id FROM table WHERE condition=? )', 8]}}
+
                 ->hash->{id};
         };
         if (defined $id) {
