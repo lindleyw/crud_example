@@ -25,16 +25,16 @@ $t->get_ok('/me')->status_is(200)->json_is('/username' => 'user')->json_has('/lo
 
 # Retrieve the count of messages                                                                                                           
 # Test using JSON path                                                                                                                     
-my $resp = $t->get_ok('/messages/count')->status_is(200);
+$t->get_ok('/messages/count')->status_is(200);
 
 # Examine JSON response and retrieve count                                                                                                 
-my $original_message_count = (decode_json($resp->tx->res->content->asset->slurp))->{count};
+my $original_message_count = (decode_json($t->tx->res->content->asset->slurp))->{count};
 # Verify that worked                                                                                                                       
-$resp = $t->get_ok('/messages/count')->status_is(200)->json_is('/count', $original_message_count, "Retrieve original message count");
+$t->get_ok('/messages/count')->status_is(200)->json_is('/count', $original_message_count, "Retrieve original message count");
 
 my $new_message_text = "Message text goes here.";
-$resp = $t->post_ok('/message/user' => json => {'text' => $new_message_text})->status_is(200);
-my $new_message_id = (decode_json($resp->tx->res->content->asset->slurp))->{id};
+$t->post_ok('/message/user' => json => {'text' => $new_message_text})->status_is(200);
+my $new_message_id = (decode_json($t->tx->res->content->asset->slurp))->{id};
 ok (defined $new_message_id, "New message has an ID");
 
 $t->get_ok('/messages/count')->status_is(200)->json_is('/count', $original_message_count+1, "Message count incremented");
