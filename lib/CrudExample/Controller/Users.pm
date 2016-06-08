@@ -20,17 +20,19 @@ sub create {
         $user_data{$field} = $text->{$field};
     }
     unless (defined $user_data{username} && defined $user_data{password}) {
-        return $self->render(json => {error => "Username and password required"});
+        return $self->render(json => {error => "Username and password required"}, status => 400);
     }
     $user_data{password} = $self->bcrypt($text->{password});
     my $result = $self->users->add(\%user_data);
     # Creating a user also logs you in as that user
-    if (!exists $result->{error}) {
+    if (exists $result->{error}) {
+        return $self->render(json => $result, status => 403); # Forbidden
+    } else {
         $self->session(logged_in => 1);
         $self->session(username => $user_data{username});
         $result->{success} = 1;
+        return $self->render(json => $result, status => 201); # Created
     }
-    return $self->render(json => $result);
 }
 
 sub logout {

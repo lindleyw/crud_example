@@ -12,7 +12,7 @@ package CrudExample::Controller::Messages v0.0.1 {
         if (defined $result) {
             return $self->render(json => $result);
         } else {
-            return $self->render(json => {success => 0, error => 'Not found'});
+            return $self->render(json => {success => 0, error => 'Not found'}, status => 404);
         }
     }
 
@@ -25,7 +25,7 @@ package CrudExample::Controller::Messages v0.0.1 {
         if (defined $result) {
             return $self->render(json => $result);
         } else {
-            return $self->render(json => {success => 0, error => 'Not found'});
+            return $self->render(json => {success => 0, error => 'Not found'}, status => 404);
         }
     }
 
@@ -38,7 +38,7 @@ package CrudExample::Controller::Messages v0.0.1 {
         if (defined $result) {
             return $self->render(json => $result);
         } else {
-            return $self->render(json => {success => 0, error => 'Not found'});
+            return $self->render(json => {success => 0, error => 'Not found'}, status => 404);
         }
     }
 
@@ -49,14 +49,14 @@ package CrudExample::Controller::Messages v0.0.1 {
         my $message = $self->req->body;
 
         unless (defined $message) {
-            return $self->render(json => {success => 0, error => 'Message contents required'});
+            return $self->render(json => {success => 0, error => 'Message contents required'}, status => 400);
         }
 
         my $result = $self->messages->send($sender, $recipient, $message);
         if (defined $result) {
             return $self->render(json => $result);
         } else {
-            return $self->render(json => {success => 0, error => 'Not sent'});
+            return $self->render(json => {success => 0, error => 'Not sent'}, status => 400);
         }
     }
 
@@ -69,7 +69,7 @@ package CrudExample::Controller::Messages v0.0.1 {
         if (defined $result) {
             return $self->render(json => $result);
         } else {
-            return $self->render(json => {success => 0, error => 'Not found'});
+            return $self->render(json => {success => 0, error => 'Not found'}, status => 404);
         }
     }
 
@@ -82,7 +82,7 @@ package CrudExample::Controller::Messages v0.0.1 {
         if (defined $result) {
             return $self->render(json => $result);
         } else {
-            return $self->render(json => {success => 0, error => 'Not found'});
+            return $self->render(json => {success => 0, error => 'Not found'}, status => 404);
         }
     }
 
