@@ -42,14 +42,6 @@ package CrudExample::Model::Message v0.0.1 {
         my ($self, $sender, $recipient, $data) = @_;
 
         my $id = eval {
-            # my $sql = 'INSERT INTO messages (sender, recipient, contents) VALUES ('.
-            #   '(SELECT id FROM users WHERE username=?),'.
-            #     '(SELECT id FROM users WHERE username=?),'.
-            #       '?) RETURNING id';
-            # $self->pg->db->query($sql, $sender, $recipient, $data )
-            # 
-            # TODO: Verify subquery operation
-            #
             $self->pg->db->query
               ( $self->sql->insert
                 ( -into => 'messages',
