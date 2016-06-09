@@ -25,39 +25,50 @@ package CrudExample::Model::Message v0.0.1 {
         return @fields, @numeric_fields;
     }
 
+    sub _subselect {
+        return \ [ shift =~ s/\bSELECT\b/shift/er , @_ ];
+    }
+
+    # call as:
+    # $self->subselect('= (SELECT)', -from => 'table', -columns => 'id', -where => {username => 'george'})
+    sub subselect {
+        my $self = shift;
+        return _subselect(shift, $self->sql->select(@_));
+    }
+
     ####
 
     sub send {
         my ($self, $sender, $recipient, $data) = @_;
 
-        my $sql = 'INSERT INTO messages (sender, recipient, contents) VALUES ('.
-          '(SELECT id FROM users WHERE username=?),'.
-          '(SELECT id FROM users WHERE username=?),'.
-          '?) RETURNING id';
-
         my $id = eval {
-            $self->pg->db->query($sql, $sender, $recipient, $data )
-              # NOTE: / TODO
-              #    Subquery is not working correctly?
-            # $self->pg->db->query
-            #   ( $self->sql->insert(-into => 'messages',
-            #                        -values => { sender => \[$self->sql->select(
-            #                                                                   -from => 'users',
-            #                                                                   -columns => [qw(id)],
-            #                                                                   -where => {username => $sender})],
-            #                                     recipient => \[$self->sql->select(
-            #                                                                      -from => 'users',
-            #                                                                      -columns => [qw(id)],
-            #                                                                      -where => {username => $recipient})],
-            #                                     contents => $data
-            #                                   },
-            #                        -returning => 'id'
-            #                       )
-            #   )
-
-              # -where => {id => {'=', \['( SELECT id FROM table WHERE condition=? )', 8]}}
-
-                ->hash->{id};
+            # my $sql = 'INSERT INTO messages (sender, recipient, contents) VALUES ('.
+            #   '(SELECT id FROM users WHERE username=?),'.
+            #     '(SELECT id FROM users WHERE username=?),'.
+            #       '?) RETURNING id';
+            # $self->pg->db->query($sql, $sender, $recipient, $data )
+            # 
+            # TODO: Verify subquery operation
+            #
+            $self->pg->db->query
+              ( $self->sql->insert
+                ( -into => 'messages',
+                  -values => { sender => $self->subselect (
+                                                           '(SELECT)', 
+                                                           -from => 'users',
+                                                           -columns => [qw(id)],
+                                                           -where => {username => $sender}),
+                               recipient => $self->subselect (
+                                                              '(SELECT)', 
+                                                              -from => 'users',
+                                                              -columns => [qw(id)],
+                                                              -where => {username => $recipient}),
+                               contents => $data
+                             },
+                  -returning => 'id'
+                )
+              )
+          ->hash->{id};
         };
         if (defined $id) {
             return {id => $id};
