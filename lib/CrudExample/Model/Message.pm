@@ -45,15 +45,13 @@ package CrudExample::Model::Message v0.0.1 {
             $self->pg->db->query
               ( $self->sql->insert
                 ( -into => 'messages',
-                  -values => { sender => $self->subselect (
-                                                           '(SELECT)', 
+                  -values => { sender => $self->subselect ('(SELECT)', 
                                                            -from => 'users',
-                                                           -columns => [qw(id)],
+                                                           -columns => 'id',
                                                            -where => {username => $sender}),
-                               recipient => $self->subselect (
-                                                              '(SELECT)', 
+                               recipient => $self->subselect ('(SELECT)', 
                                                               -from => 'users',
-                                                              -columns => [qw(id)],
+                                                              -columns => 'id',
                                                               -where => {username => $recipient}),
                                contents => $data
                              },
